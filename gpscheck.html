@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Report with GPS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    video, img {
+      width: 300px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    button, input {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Emergency Report</h1>
+
+<!-- Webcam -->
+<h2>Capture Image</h2>
+<video id="video" autoplay playsinline></video>
+<br>
+<button id="captureBtn">Capture & Submit</button>
+<img id="capturedImage" src="" style="display:none;">
+
+<!-- File Upload -->
+<h2>Attach File</h2>
+<input type="file" id="fileInput">
+
+<!-- GPS -->
+<h2>Your Location</h2>
+<p id="locationText">Fetching location...</p>
+
+<form id="uploadForm" method="POST" action="/upload">
+  <input type="hidden" name="captured_image" id="capturedInput">
+  <input type="hidden" name="latitude" id="latInput">
+  <input type="hidden" name="longitude" id="lngInput">
+</form>
+
+<script>
+  // Webcam
+  const video = document.getElementById('video');
+  const captureBtn = document.getElementById('captureBtn');
+  const capturedImage = document.getElementById('capturedImage');
+  const capturedInput = document.getElementById('capturedInput');
+  const uploadForm = document.getElementById('uploadForm');
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => video.srcObject = stream)
+    .catch(err => alert('Cannot access webcam: ' + err));
+
+  // Capture image
+  captureBtn.addEventListener('click', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL('image/png');
+    capturedImage.src = dataURL;
+    capturedImage.style.display = 'block';
+    capturedInput.value = dataURL;
+
+    // Submit form after getting GPS
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        document.getElementById('latInput').value = position.coords.latitude;
+        document.getElementById('lngInput').value = position.coords.longitude;
+        uploadForm.submit();
+      }, error => {
+        alert('Could not get location. Submitting without GPS.');
+        uploadForm.submit();
+      });
+    } else {
+      alert('Geolocation not supported. Submitting without GPS.');
+      uploadForm.submit();
+    }
+  });
+
+  // Display location live
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      document.getElementById('locationText').textContent = `Latitude: ${lat}, Longitude: ${lng}`;
+    }, error => {
+      document.getElementById('locationText').textContent = 'Location not available';
+    });
+  } else {
+    document.getElementById('locationText').textContent = 'Geolocation not supported';
+  }
+</script>
+
+</body>
+</html>
