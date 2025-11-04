@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #ebf4ff, #c3dafe);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    .section {
+      background-color: white;
+      border-radius: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .section-title div {
+      width: 6px;
+      height: 32px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .emergency-line { background-color: #e53e3e; }
+    .nonemergency-line { background-color: #38a169; }
+
+    .button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 15px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+    }
+
+    .hospital { background-color: #e53e3e; } /* Red */
+    .fire { background-color: #ed8936; } /* Orange */
+    .police { background-color: #3182ce; } /* Blue */
+    .municipality { background-color: #38a169; } /* Green */
+
+    .button span.emoji {
+      font-size: 22px;
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Emergency Services</header>
+
+  <!-- Emergency Section -->
+  <div class="section">
+    <div class="section-title">
+      <div class="emergency-line"></div>
+      <h2>Emergency</h2>
+    </div>
+
+    <div class="button hospital" onclick="callService('Hospital')">
+      <span>Hospital</span>
+      <span class="emoji">🏥</span>
+    </div>
+
+    <div class="button fire" onclick="callService('Fire Brigade')">
+      <span>Fire Brigade</span>
+      <span class="emoji">🚒</span>
+    </div>
+
+    <div class="button police" onclick="callService('Police')">
+      <span>Police</span>
+      <span class="emoji">👮</span>
+    </div>
+  </div>
+
+  <!-- Non-Emergency Section -->
+  <div class="section">
+    <div class="section-title">
+      <div class="nonemergency-line"></div>
+      <h2>Non-Emergency</h2>
+    </div>
+
+    <div class="button municipality" onclick="callService('Municipality')">
+      <span>Municipality</span>
+      <span class="emoji">🏛️</span>
+    </div>
+  </div>
+
+  <footer>Tap any button to connect with the service | Hackathon Prototype</footer>
+
+  <script>
+    function callService(service) {
+      alert('Calling ' + service + '...');
+    }
+  </script>
+
+</body>
+</html>
