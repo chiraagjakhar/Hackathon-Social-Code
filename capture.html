@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camera Capture</title>
+  <style>
+    video, canvas {
+      width: 640px;
+      height: 480px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 12px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>📸 Capture an Image</h2>
+  <video id="video" autoplay></video><br>
+  <button id="capture">Take Picture</button>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('capture');
+
+    // Ask for permission to use camera
+    navigator.mediaDevices.getUserMedia({
+  video: { width: { ideal: 1280 }, height: { ideal: 720 } }
+})
+
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Camera access denied: " + err.message);
+      });
+
+    // When button is clicked, take snapshot
+    captureButton.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Optional: get the image data as base64 (to upload later)
+      const imageData = canvas.toDataURL('image/png');
+      console.log("Captured image data:", imageData);
+    });
+  </script>
+</body>
+</html>
