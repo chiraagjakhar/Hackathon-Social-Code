@@ -5,56 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Camera Capture</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+    }
     video, canvas {
-      width: 640px;
-      height: 480px;
+      width: 100%;
+      max-width: 1280px;
+      height: auto;
       border: 2px solid #333;
       border-radius: 8px;
       margin-bottom: 10px;
+      display: block;
+    }
+    canvas {
+      display: none;
+    }
+    canvas.show {
+      display: block;
     }
     button {
-      padding: 8px 12px;
+      padding: 12px 20px;
       font-size: 16px;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .controls {
+      margin: 15px 0;
+    }
+    select {
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      margin-right: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>📸 Capture an Image</h2>
-  <video id="video" autoplay></video><br>
-  <button id="capture">Take Picture</button>
+  <h2>📸 High Quality Camera Capture</h2>
+  
+  <div class="controls">
+    <select id="resolution">
+      <option value="4k">4K (3840x2160)</option>
+      <option value="1080p" selected>Full HD (1920x1080)</option>
+      <option value="720p">HD (1280x720)</option>
+      <option value="480p">SD (640x480)</option>
+    </select>
+    <button id="startCamera">Start Camera</button>
+  </div>
+
+  <video id="video" autoplay playsinline></video>
+  
+  <div class="controls">
+    <button id="capture" disabled>Take Picture</button>
+    <button id="download" style="display:none;">Download Image</button>
+  </div>
+  
   <canvas id="canvas"></canvas>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const captureButton = document.getElementById('capture');
+    const downloadButton = document.getElementById('download');
+    const startCameraButton = document.getElementById('startCamera');
+    const resolutionSelect = document.getElementById('resolution');
+    
+    let stream = null;
 
-    // Ask for permission to use camera
-    navigator.mediaDevices.getUserMedia({
-  video: { width: { ideal: 1280 }, height: { ideal: 720 } }
-})
+    const resolutions = {
+      '4k': { width: 3840, height: 2160 },
+      '1080p': { width: 1920, height: 1080 },
+      '720p': { width: 1280, height: 720 },
+      '480p': { width: 640, height: 480 }
+    };
 
-      .then(stream => {
+    async function startCamera() {
+      // Stop existing stream if any
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+
+      const selectedRes = resolutions[resolutionSelect.value];
+      
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: selectedRes.width },
+            height: { ideal: selectedRes.height },
+            facingMode: 'user',
+            frameRate: { ideal: 30 },
+            aspectRatio: { ideal: 16/9 }
+          }
+        });
+        
         video.srcObject = stream;
-      })
-      .catch(err => {
-        alert("Camera access denied: " + err.message);
-      });
+        captureButton.disabled = false;
+        
+        // Log actual resolution
+        const videoTrack = stream.getVideoTracks()[0];
+        const settings = videoTrack.getSettings();
+        console.log('Actual resolution:', settings.width + 'x' + settings.height);
+        
+      } catch (err) {
+        alert("Camera access denied or resolution not supported: " + err.message);
+        captureButton.disabled = true;
+      }
+    }
 
-    // When button is clicked, take snapshot
+    startCameraButton.addEventListener('click', startCamera);
+    
+    resolutionSelect.addEventListener('change', () => {
+      if (stream) {
+        startCamera();
+      }
+    });
+
     captureButton.addEventListener('click', () => {
+      // Get actual video dimensions
+      const videoTrack = stream.getVideoTracks()[0];
+      const settings = videoTrack.getSettings();
+      
+      // Set canvas to match actual video resolution
+      canvas.width = settings.width || video.videoWidth;
+      canvas.height = settings.height || video.videoHeight;
+      
       const context = canvas.getContext('2d');
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Optional: get the image data as base64 (to upload later)
-      const imageData = canvas.toDataURL('image/png');
-      console.log("Captured image data:", imageData);
+      
+      canvas.classList.add('show');
+      downloadButton.style.display = 'inline-block';
+      
+      console.log("Captured image at:", canvas.width + 'x' + canvas.height);
     });
+
+    downloadButton.addEventListener('click', () => {
+      const imageData = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'capture-' + Date.now() + '.png';
+      link.href = imageData;
+      link.click();
+    });
+
+    // Auto-start camera on load
+    window.addEventListener('load', startCamera);
   </script>
 </body>
 </html>
