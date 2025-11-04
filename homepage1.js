@@ -1,55 +1,99 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { ShieldAlert, Hospital, Flame, Building } from "lucide-react";
+import React from 'react';
+import { Phone, Flame, Shield, Building2 } from 'lucide-react';
 
-export default function HomePage() {
+export default function EmergencyApp() {
+  const handleEmergencyCall = (service) => {
+    alert(`Calling ${service}...`);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex flex-col gap-8">
-      {/* Emergency Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card className="shadow-lg rounded-2xl border-red-400 border-2">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-semibold text-red-600 mb-4 flex items-center gap-2">
-              <ShieldAlert className="text-red-600" /> Emergency
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Button className="bg-red-500 hover:bg-red-600 text-white text-lg py-6 rounded-xl">
-                <Hospital className="mr-2" /> Hospital
-              </Button>
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white text-lg py-6 rounded-xl">
-                <Flame className="mr-2" /> Fire Brigade
-              </Button>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 rounded-xl">
-                <ShieldAlert className="mr-2" /> Police
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="max-w-md mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 pt-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Emergency Services</h1>
+          <p className="text-gray-600">Quick access to help when you need it</p>
+        </div>
 
-      {/* Non-Emergency Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <Card className="shadow-lg rounded-2xl border-green-400 border-2">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-semibold text-green-600 mb-4 flex items-center gap-2">
-              <Building className="text-green-600" /> Non Emergency
-            </h2>
-            <Button className="bg-green-500 hover:bg-green-600 text-white text-lg py-6 w-full sm:w-auto rounded-xl">
-              Municipality
-            </Button>
-          </CardContent>
-        </Card>
-      </motion.div>
+        {/* Emergency Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="flex items-center mb-4">
+            <div className="w-2 h-8 bg-red-500 rounded-full mr-3"></div>
+            <h2 className="text-xl font-bold text-gray-800">Emergency</h2>
+          </div>
+          
+          <div className="space-y-3">
+            {/* Hospital Button */}
+            <button
+              onClick={() => handleEmergencyCall('Hospital')}
+              className="w-full bg-red-500 hover:bg-red-600 text-white rounded-xl p-4 flex items-center justify-between transition-all duration-200 transform hover:scale-105 shadow-md"
+            >
+              <div className="flex items-center">
+                <div className="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                  <Phone className="w-6 h-6" />
+                </div>
+                <span className="text-lg font-semibold">Hospital</span>
+              </div>
+              <div className="text-2xl">🏥</div>
+            </button>
+
+            {/* Fire Brigade Button */}
+            <button
+              onClick={() => handleEmergencyCall('Fire Brigade')}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-xl p-4 flex items-center justify-between transition-all duration-200 transform hover:scale-105 shadow-md"
+            >
+              <div className="flex items-center">
+                <div className="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                  <Flame className="w-6 h-6" />
+                </div>
+                <span className="text-lg font-semibold">Fire Brigade</span>
+              </div>
+              <div className="text-2xl">🚒</div>
+            </button>
+
+            {/* Police Button */}
+            <button
+              onClick={() => handleEmergencyCall('Police')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl p-4 flex items-center justify-between transition-all duration-200 transform hover:scale-105 shadow-md"
+            >
+              <div className="flex items-center">
+                <div className="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <span className="text-lg font-semibold">Police</span>
+              </div>
+              <div className="text-2xl">👮</div>
+            </button>
+          </div>
+        </div>
+
+        {/* Non-Emergency Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center mb-4">
+            <div className="w-2 h-8 bg-green-500 rounded-full mr-3"></div>
+            <h2 className="text-xl font-bold text-gray-800">Non-Emergency</h2>
+          </div>
+          
+          {/* Municipality Button */}
+          <button
+            onClick={() => handleEmergencyCall('Municipality')}
+            className="w-full bg-green-500 hover:bg-green-600 text-white rounded-xl p-4 flex items-center justify-between transition-all duration-200 transform hover:scale-105 shadow-md"
+          >
+            <div className="flex items-center">
+              <div className="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <span className="text-lg font-semibold">Municipality</span>
+            </div>
+            <div className="text-2xl">🏛️</div>
+          </button>
+        </div>
+
+        {/* Footer Info */}
+        <div className="text-center mt-6 text-sm text-gray-600">
+          <p>Tap any button to connect with the service</p>
+        </div>
+      </div>
     </div>
   );
 }
