@@ -151,17 +151,17 @@
       <h2>Emergency</h2>
     </div>
 
-    <div class="button hospital" onclick="callService('Hospital')">
+    <div class="button hospital" onclick="openGPSPage()">
       <span>Hospital</span>
       <img src="https://img.icons8.com/ios-filled/50/ffffff/hospital-room.png" alt="Hospital Icon">
     </div>
 
-    <div class="button fire" onclick="callService('Fire Brigade')">
+    <div class="button fire" onclick="openGPSPage()">
       <span>Fire Brigade</span>
       <img src="https://img.icons8.com/ios-filled/50/ffffff/fire-truck.png" alt="Fire Truck Icon">
     </div>
 
-    <div class="button police" onclick="callService('Police')">
+    <div class="button police" onclick="openGPSPage()">
       <span>Police</span>
       <img src="https://img.icons8.com/ios-filled/50/ffffff/policeman-male.png" alt="Police Icon">
     </div>
@@ -174,7 +174,7 @@
       <h2>Non-Emergency</h2>
     </div>
 
-    <div class="button municipality" onclick="callService('Municipality')">
+    <div class="button municipality" onclick="openGPSPage()">
       <span>Municipality</span>
       <img src="https://img.icons8.com/ios-filled/50/ffffff/city-buildings.png" alt="Municipality Icon">
     </div>
@@ -200,9 +200,20 @@
 
   <script>
     function callService(service) {
+        alert('Calling ' + service + '...');
+    }
+
+    function openGPSPage() {
+        window.location.href = "gps.html"; // Redirects to gps.html
+    }
+  </script>
+<!--
+  <script>
+    function callService(service) {
       alert('Calling ' + service + '...');
     }
   </script>
+-->
 
 </body>
 </html>
