@@ -40,8 +40,8 @@ A real-time emergency reporting system that connects citizens with emergency ser
 - HTML5
 - CSS3 (Custom styling with gradients)
 - Vanilla JavaScript
-- MediaDevices API (Camera access)
-- Geolocation API (GPS tracking)
+- (Camera access)
+- (GPS tracking)
 
 ### Backend
 - Node.js
@@ -122,11 +122,7 @@ net start MySQL80
 mysql.server start
 ```
 
-**Linux:**
-```bash
-# Start MySQL
-sudo systemctl start mysql
-```
+
 
 ### Step 2: Create Database and Table
 
@@ -197,41 +193,6 @@ You should see:
 1. Open `services.html` in another browser tab/window
 2. Dashboard will automatically load reports
 
-## 📖 Usage
-
-### For Citizens (Submitting Reports)
-
-1. **Open one.html** in your browser
-2. **Select Emergency Type**:
-   - Click Hospital (red)
-   - Click Fire Brigade (orange)
-   - Click Police (blue)
-   - Click Municipality (green)
-3. **Allow Permissions**:
-   - Camera access
-   - Location access
-4. **Capture Evidence**:
-   - Camera will activate automatically
-   - Click "Capture & Submit"
-5. **Confirmation**:
-   - Success message with Report ID
-   - Modal closes automatically
-
-### For Authorities (Viewing Reports)
-
-1. **Open services.html** in your browser
-2. **View Statistics**:
-   - Total reports
-   - Reports per service type
-3. **Filter Reports**:
-   - Click "All Reports" (default)
-   - Or filter by specific service
-4. **View Details**:
-   - Click image to view full size
-   - Click "View on Google Maps" for location
-5. **Refresh**:
-   - Click "🔄 Refresh" button
-   - Or wait for auto-refresh (10 seconds)
 
 ## 🔌 API Endpoints
 
@@ -368,92 +329,7 @@ PUT /reports/123/resolve
   - Scripts configuration
   - Module type (ES6)
 
-## 🔧 Troubleshooting
 
-### Issue: Server won't start
-
-**Error:** `MySQL connection failed`
-
-**Solution:**
-1. Check if MySQL is running
-2. Verify database credentials in `server.js`
-3. Ensure `emergency_app` database exists
-4. Check if port 3000 is available
-
-```bash
-# Check MySQL status
-mysql -u root -p -e "SELECT 1"
-
-# Check if port 3000 is in use
-netstat -ano | findstr :3000    # Windows
-lsof -i :3000                    # Mac/Linux
-```
-
-### Issue: Cannot access camera
-
-**Error:** `Cannot access webcam`
-
-**Solution:**
-1. Check browser permissions (Settings → Privacy → Camera)
-2. Ensure HTTPS or localhost
-3. Close other apps using camera
-4. Try different browser
-
-### Issue: Reports not appearing in dashboard
-
-**Problem:** Submit works but dashboard is empty
-
-**Solution:**
-1. Check if server is running (`node server.js`)
-2. Open browser console (F12) and check for errors
-3. Verify database has data:
-   ```sql
-   USE emergency_app;
-   SELECT * FROM reports;
-   ```
-4. Check if CORS is enabled in `server.js`
-5. Ensure both files use same server URL (`http://localhost:3000`)
-
-### Issue: CORS errors
-
-**Error:** `Access-Control-Allow-Origin`
-
-**Solution:**
-Already handled in `server.js` with:
-```javascript
-app.use(cors());
-```
-
-If still getting errors:
-```javascript
-// Add specific CORS configuration
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT'],
-  allowedHeaders: ['Content-Type']
-}));
-```
-
-### Issue: Image too large error
-
-**Error:** `Request entity too large`
-
-**Solution:**
-Increase body parser limit in `server.js`:
-```javascript
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
-```
-
-### Issue: Location not detected
-
-**Error:** `Location not available`
-
-**Solution:**
-1. Check browser location permissions
-2. Ensure HTTPS (or use localhost)
-3. Wait a few seconds for GPS lock
-4. Try different browser
 
 ## 🌐 Browser Compatibility
 
@@ -505,47 +381,6 @@ The application is fully responsive and works on:
    // Prevent spam submissions
    // API throttling
    ```
-
-## 🚀 Future Enhancements
-
-- [ ] User authentication and authorization
-- [ ] Real-time notifications (WebSocket)
-- [ ] SMS/Email alerts to authorities
-- [ ] Report status tracking (pending/in-progress/resolved)
-- [ ] Admin panel for user management
-- [ ] Report analytics and charts
-- [ ] Mobile app (React Native)
-- [ ] Multi-language support
-- [ ] Voice recording feature
-- [ ] Emergency contact integration
-
-## 👥 Credits
-
-- **Icons**: Icons8 (https://icons8.com)
-- **Gradients**: UI Gradients
-- **Database**: MySQL
-- **Framework**: Express.js
-
-## 📝 License
-
-This is a hackathon prototype project. Feel free to modify and use for educational purposes.
-
-## 🤝 Contributing
-
-This is a prototype/hackathon project. For improvements:
-1. Fork the repository
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Open pull request
-
-## 📞 Support
-
-For issues or questions:
-1. Check the Troubleshooting section
-2. Review console logs (F12)
-3. Check server logs in terminal
-4. Verify database connection
 
 ## 🎯 Quick Start Checklist
 
