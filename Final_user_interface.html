@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #ebf4ff, #c3dafe);
+      margin: 0;
+      padding: 0 0 80px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 400px;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #666;
+      text-align: left;
+    }
+
+    .user-name {
+      font-weight: bold;
+      color: #3182ce;
+    }
+
+    .logout-btn {
+      background: #e53e3e;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .logout-btn:hover {
+      background: #c53030;
+    }
+
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    .section {
+      background-color: white;
+      border-radius: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .section-title div {
+      width: 6px;
+      height: 32px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .emergency-line { background-color: #e53e3e; }
+    .nonemergency-line { background-color: #38a169; }
+
+    .button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 15px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+    }
+
+    .hospital { background-color: #e53e3e; }
+    .fire { background-color: #ed8936; }
+    .police { background-color: #3182ce; }
+    .municipality { background-color: #38a169; }
+
+    .button img {
+      width: 26px;
+      height: 26px;
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #666;
+      font-size: 12px;
+      text-decoration: none;
+      flex: 1;
+      padding: 6px 0;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item img {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 3px;
+      opacity: 0.8;
+    }
+
+    .nav-item.active {
+      color: #3182ce;
+      font-weight: bold;
+    }
+
+    .nav-item.active img {
+      opacity: 1;
+    }
+
+    .nav-item:hover {
+      transform: scale(1.1);
+      color: #3182ce;
+    }
+
+    /* GPS Report Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 200;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #f2f2f2;
+      margin: 20px;
+      padding: 25px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 15px;
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h1 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .modal-content h2 {
+      color: #555;
+      font-size: 18px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    video {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+      margin: 10px 0;
+      background: #000;
+    }
+
+    .preview-container {
+      position: relative;
+      display: none;
+      margin: 15px 0;
+    }
+
+    .preview-container.active {
+      display: block;
+    }
+
+    .preview-image {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+      border: 3px solid #38a169;
+    }
+
+    .retake-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(229, 62, 62, 0.9);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .retake-btn:hover {
+      background: rgba(197, 48, 48, 0.9);
+    }
+
+    .modal-content button {
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .capture-btn {
+      background-color: #3182ce;
+      color: white;
+    }
+
+    .capture-btn:hover {
+      background-color: #2c5aa0;
+      transform: translateY(-2px);
+    }
+
+    .capture-btn:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn {
+      background-color: #38a169;
+      color: white;
+      display: none;
+    }
+
+    .submit-btn.active {
+      display: inline-block;
+    }
+
+    .submit-btn:hover {
+      background-color: #2f855a;
+      transform: translateY(-2px);
+    }
+
+    .close-btn {
+      background-color: #e53e3e;
+      color: white;
+    }
+
+    .close-btn:hover {
+      background-color: #c53030;
+      transform: translateY(-2px);
+    }
+
+    #locationText {
+      color: #333;
+      font-weight: bold;
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .status-message.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border: 2px solid #38a169;
+      display: block;
+    }
+
+    .status-message.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 2px solid #e53e3e;
+      display: block;
+    }
+
+    .video-container {
+      position: relative;
+    }
+
+    .camera-icon {
+      font-size: 48px;
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="user-info">
+      👤 <span class="user-name" id="displayName">User</span>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <!-- Emergency Section -->
+  <div class="section">
+    <div class="section-title">
+      <div class="emergency-line"></div>
+      <h2>Emergency</h2>
+    </div>
+
+    <div class="button hospital" onclick="openGPSModal('Hospital')">
+      <span>Hospital</span>
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/hospital-room.png" alt="Hospital Icon">
+    </div>
+
+    <div class="button fire" onclick="openGPSModal('Fire Brigade')">
+      <span>Fire Brigade</span>
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/fire-truck.png" alt="Fire Truck Icon">
+    </div>
+
+    <div class="button police" onclick="openGPSModal('Police')">
+      <span>Police</span>
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/policeman-male.png" alt="Police Icon">
+    </div>
+  </div>
+
+  <!-- Non-Emergency Section -->
+  <div class="section">
+    <div class="section-title">
+      <div class="nonemergency-line"></div>
+      <h2>Non-Emergency</h2>
+    </div>
+
+    <div class="button municipality" onclick="openGPSModal('Municipality')">
+      <span>Municipality</span>
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/city-buildings.png" alt="Municipality Icon">
+    </div>
+  </div>
+
+  <footer>Tap any button to report an emergency | Hackathon Prototype</footer>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="bottom-nav">
+    <a href="#" class="nav-item">
+      <img src="https://img.icons8.com/ios-filled/50/666666/timeline-week.png" alt="Complaints Icon">
+      Past Reports
+    </a>
+    <a href="#" class="nav-item active">
+      <img src="https://img.icons8.com/ios-filled/50/3182ce/home.png" alt="Home Icon">
+      Home
+    </a>
+    <a href="#" class="nav-item">
+      <img src="https://img.icons8.com/ios-filled/50/666666/user.png" alt="Profile Icon">
+      Profile
+    </a>
+  </div>
+
+  <!-- GPS Report Modal -->
+  <div id="gpsModal" class="modal">
+    <div class="modal-content">
+      <h1 id="serviceTitle">Emergency Report</h1>
+
+      <div class="status-message" id="statusMessage"></div>
+
+      <h2>📸 Capture Evidence</h2>
+      <div class="video-container">
+        <video id="video" autoplay playsinline></video>
+      </div>
+      
+      <div class="preview-container" id="previewContainer">
+        <img id="capturedImage" class="preview-image" src="" alt="Captured">
+        <button class="retake-btn" onclick="retakePhoto()">🔄 Retake</button>
+      </div>
+
+      <button class="capture-btn" id="captureBtn">📷 Capture Photo</button>
+
+      <h2>📍 Your Location</h2>
+      <p id="locationText">📡 Fetching location...</p>
+
+      <div style="margin-top: 20px;">
+        <button class="submit-btn" id="submitBtn">✅ Submit Report</button>
+        <button class="close-btn" onclick="closeGPSModal()">❌ Close</button>
+      </div>
+
+      <input type="hidden" id="capturedInput">
+      <input type="hidden" id="latInput">
+      <input type="hidden" id="lngInput">
+      <input type="hidden" id="serviceInput">
+      <input type="hidden" id="userEmailInput">
+      <input type="hidden" id="userNameInput">
+    </div>
+  </div>
+
+  <script>
+    // Check if user is logged in
+    window.addEventListener('DOMContentLoaded', function() {
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{"name":"Demo User","email":"demo@example.com"}');
+      
+      document.getElementById('displayName').textContent = loggedInUser.name;
+      document.getElementById('userEmailInput').value = loggedInUser.email;
+      document.getElementById('userNameInput').value = loggedInUser.name;
+    });
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+      }
+    }
+
+    const modal = document.getElementById('gpsModal');
+    const video = document.getElementById('video');
+    const captureBtn = document.getElementById('captureBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const capturedImage = document.getElementById('capturedImage');
+    const capturedInput = document.getElementById('capturedInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const serviceTitle = document.getElementById('serviceTitle');
+    const serviceInput = document.getElementById('serviceInput');
+    const statusMessage = document.getElementById('statusMessage');
+    let stream = null;
+
+    function openGPSModal(service) {
+      modal.classList.add('active');
+      serviceTitle.textContent = service + ' - Emergency Report';
+      serviceInput.value = service;
+      
+      // Reset state
+      previewContainer.classList.remove('active');
+      submitBtn.classList.remove('active');
+      captureBtn.disabled = false;
+      statusMessage.style.display = 'none';
+      
+      // Start webcam
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(s => {
+          stream = s;
+          video.srcObject = stream;
+          video.style.display = 'block';
+        })
+        .catch(err => {
+          alert('Cannot access camera: ' + err.message);
+          video.style.display = 'none';
+        });
+
+      // Get GPS location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          document.getElementById('locationText').textContent = `📍 Lat: ${lat}, Long: ${lng}`;
+          document.getElementById('latInput').value = lat;
+          document.getElementById('lngInput').value = lng;
+        }, error => {
+          document.getElementById('locationText').textContent = '⚠️ Location not available';
+        });
+      } else {
+        document.getElementById('locationText').textContent = '⚠️ Geolocation not supported';
+      }
+    }
+
+    function closeGPSModal() {
+      modal.classList.remove('active');
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      previewContainer.classList.remove('active');
+      submitBtn.classList.remove('active');
+      video.style.display = 'block';
+      captureBtn.disabled = false;
+      document.getElementById('locationText').textContent = '📡 Fetching location...';
+      statusMessage.style.display = 'none';
+    }
+
+    function retakePhoto() {
+      previewContainer.classList.remove('active');
+      submitBtn.classList.remove('active');
+      video.style.display = 'block';
+      captureBtn.disabled = false;
+      capturedInput.value = '';
+    }
+
+    captureBtn.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+      
+      capturedImage.src = dataURL;
+      capturedInput.value = dataURL;
+      
+      // Show preview, hide video
+      previewContainer.classList.add('active');
+      video.style.display = 'none';
+      captureBtn.disabled = true;
+      submitBtn.classList.add('active');
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      const service = serviceInput.value;
+      const latitude = document.getElementById('latInput').value;
+      const longitude = document.getElementById('lngInput').value;
+      const capturedImageData = capturedInput.value;
+      const userEmail = document.getElementById('userEmailInput').value;
+      const userName = document.getElementById('userNameInput').value;
+
+      if (!capturedImageData) {
+        showStatus('Please capture a photo first!', 'error');
+        return;
+      }
+
+      if (!latitude || !longitude) {
+        showStatus('Location not available. Please enable location services.', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Submitting...';
+
+      try {
+        const response = await fetch('http://localhost:3000/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            service: service,
+            latitude: latitude,
+            longitude: longitude,
+            captured_image: capturedImageData,
+            user_email: userEmail,
+            user_name: userName
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showStatus(`✅ Report submitted successfully to ${service}!`, 'success');
+          
+          setTimeout(() => {
+            closeGPSModal();
+          }, 2000);
+        } else {
+          showStatus('❌ Failed to submit report: ' + result.message, 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = '✅ Submit Report';
+        }
+      } catch (error) {
+        console.error('Error submitting report:', error);
+        showStatus('❌ Network error. Using demo mode - Report logged locally.', 'error');
+        
+        // Demo mode - store locally
+        const reports = JSON.parse(localStorage.getItem('emergencyReports') || '[]');
+        reports.push({
+          id: Date.now(),
+          service: service,
+          latitude: latitude,
+          longitude: longitude,
+          userName: userName,
+          userEmail: userEmail,
+          timestamp: new Date().toISOString(),
+          image: capturedImageData.substring(0, 100) + '...'
+        });
+        localStorage.setItem('emergencyReports', JSON.stringify(reports));
+        
+        setTimeout(() => {
+          closeGPSModal();
+        }, 2000);
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = '✅ Submit Report';
+    });
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = 'status-message ' + type;
+      statusMessage.style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
