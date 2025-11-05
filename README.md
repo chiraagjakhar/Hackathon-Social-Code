@@ -11,10 +11,9 @@ A real-time emergency reporting system that connects citizens with emergency ser
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [Running the Application](#running-the-application)
-- [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [File Descriptions](#file-descriptions)
-- [Troubleshooting](#troubleshooting)
+
 
 ##  Features
 
