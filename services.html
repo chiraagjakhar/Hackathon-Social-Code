@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Reports Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .filter-section {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.3s;
+      color: white;
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .filter-btn.active {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
+    }
+
+    .btn-all { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .btn-hospital { background: #e53e3e; }
+    .btn-fire { background: #ed8936; }
+    .btn-police { background: #3182ce; }
+    .btn-municipality { background: #38a169; }
+
+    .refresh-btn {
+      margin-left: auto;
+      background: #4a5568;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .refresh-btn:hover {
+      background: #2d3748;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .report-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .report-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    }
+
+    .report-header {
+      padding: 20px;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .report-header.hospital { background: #e53e3e; }
+    .report-header.fire { background: #ed8936; }
+    .report-header.police { background: #3182ce; }
+    .report-header.municipality { background: #38a169; }
+
+    .report-id {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .report-body {
+      padding: 20px;
+    }
+
+    .report-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .report-image:hover {
+      transform: scale(1.02);
+    }
+
+    .report-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .info-icon {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+    }
+
+    .location-link {
+      color: #3182ce;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .location-link:hover {
+      text-decoration: underline;
+    }
+
+    .timestamp {
+      color: #999;
+      font-size: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .no-reports {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      color: #666;
+      font-size: 18px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 40px;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-section {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚨 Emergency Reports Dashboard</h1>
+      <p class="subtitle">Real-time monitoring of emergency service requests</p>
+    </header>
+
+    <div class="filter-section">
+      <button class="filter-btn btn-all active" onclick="filterReports('all')">All Reports</button>
+      <button class="filter-btn btn-hospital" onclick="filterReports('Hospital')">Hospital</button>
+      <button class="filter-btn btn-fire" onclick="filterReports('Fire Brigade')">Fire Brigade</button>
+      <button class="filter-btn btn-police" onclick="filterReports('Police')">Police</button>
+      <button class="filter-btn btn-municipality" onclick="filterReports('Municipality')">Municipality</button>
+      <button class="refresh-btn" onclick="loadReports()">🔄 Refresh</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="reports-grid" id="reportsContainer">
+      <div class="loading"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="imageModal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modalImage" src="" alt="Full size image">
+  </div>
+
+  <script>
+    let allReports = [];
+    let currentFilter = 'all';
+
+    // Load reports from server
+    async function loadReports() {
+      try {
+        const response = await fetch('http://localhost:3000/reports');
+        const data = await response.json();
+        allReports = data;
+        displayStats();
+        displayReports();
+      } catch (error) {
+        console.error('Error loading reports:', error);
+        document.getElementById('reportsContainer').innerHTML = 
+          '<div class="no-reports">❌ Error loading reports. Make sure the server is running.</div>';
+      }
+    }
+
+    // Display statistics
+    function displayStats() {
+      const stats = {
+        total: allReports.length,
+        hospital: allReports.filter(r => r.service === 'Hospital').length,
+        fire: allReports.filter(r => r.service === 'Fire Brigade').length,
+        police: allReports.filter(r => r.service === 'Police').length,
+        municipality: allReports.filter(r => r.service === 'Municipality').length
+      };
+
+      document.getElementById('stats').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-number" style="color: #667eea">${stats.total}</div>
+          <div class="stat-label">Total Reports</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: #e53e3e">${stats.hospital}</div>
+          <div class="stat-label">Hospital</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: #ed8936">${stats.fire}</div>
+          <div class="stat-label">Fire Brigade</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: #3182ce">${stats.police}</div>
+          <div class="stat-label">Police</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: #38a169">${stats.municipality}</div>
+          <div class="stat-label">Municipality</div>
+        </div>
+      `;
+    }
+
+    // Display reports based on filter
+    function displayReports() {
+      const filtered = currentFilter === 'all' 
+        ? allReports 
+        : allReports.filter(r => r.service === currentFilter);
+
+      const container = document.getElementById('reportsContainer');
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="no-reports">📭 No reports found</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(report => {
+        const serviceClass = report.service.toLowerCase().replace(' ', '');
+        const timestamp = new Date(report.created_at).toLocaleString();
+        const mapsUrl = `https://www.google.com/maps?q=${report.latitude},${report.longitude}`;
+
+        return `
+          <div class="report-card">
+            <div class="report-header ${serviceClass}">
+              <span>${report.service}</span>
+              <span class="report-id">#${report.id}</span>
+            </div>
+            <div class="report-body">
+              <img 
+                src="${report.captured_image}" 
+                alt="Report Image" 
+                class="report-image"
+                onclick="openModal('${report.captured_image}')"
+              >
+              <div class="report-info">
+                <div class="info-row">
+                  <img src="https://img.icons8.com/ios-filled/50/666666/marker.png" class="info-icon" alt="Location">
+                  <a href="${mapsUrl}" target="_blank" class="location-link">
+                    View on Google Maps
+                  </a>
+                </div>
+                <div class="info-row">
+                  <img src="https://img.icons8.com/ios-filled/50/666666/geography.png" class="info-icon" alt="Coordinates">
+                  <span>${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}</span>
+                </div>
+                <div class="timestamp">
+                  ⏰ Reported: ${timestamp}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Filter reports
+    function filterReports(filter) {
+      currentFilter = filter;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      displayReports();
+    }
+
+    // Modal functions
+    function openModal(imageSrc) {
+      document.getElementById('modalImage').src = imageSrc;
+      document.getElementById('imageModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('imageModal').classList.remove('active');
+    }
+
+    // Load reports on page load
+    loadReports();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadReports, 30000);
+  </script>
+</body>
+</html>
