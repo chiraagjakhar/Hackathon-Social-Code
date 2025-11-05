@@ -292,7 +292,7 @@
 
       <button class="close-btn" onclick="closeGPSModal()">Close</button>
 
-      <form id="uploadForm" method="POST" action="/upload" style="display:none;">
+      <form id="uploadForm" method="POST" action="http://localhost:3000/upload" style="display:none;">
         <input type="hidden" name="captured_image" id="capturedInput">
         <input type="hidden" name="latitude" id="latInput">
         <input type="hidden" name="longitude" id="lngInput">
@@ -364,7 +364,7 @@
       alert('Report submitted successfully!\nService: ' + serviceInput.value + '\nLocation: ' + document.getElementById('latInput').value + ', ' + document.getElementById('lngInput').value);
       
       // In production, uncomment this to actually submit:
-      // uploadForm.submit();
+      uploadForm.submit();
       
       closeGPSModal();
     });
