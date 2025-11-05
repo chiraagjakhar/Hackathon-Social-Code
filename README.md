@@ -16,7 +16,7 @@ A real-time emergency reporting system that connects citizens with emergency ser
 - [File Descriptions](#file-descriptions)
 - [Troubleshooting](#troubleshooting)
 
-## ✨ Features
+##  Features
 
 ### Citizen Portal (one.html)
 - 🏥 **Emergency Services**: Hospital, Fire Brigade, Police
@@ -34,7 +34,7 @@ A real-time emergency reporting system that connects citizens with emergency ser
 - 🖼️ **Image Preview**: Click to view full-size images
 - 🔄 **Auto-refresh**: Updates every 10 seconds
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 - HTML5
@@ -53,7 +53,7 @@ A real-time emergency reporting system that connects citizens with emergency ser
 ### Database
 - MySQL
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 emergency-app/
@@ -66,7 +66,7 @@ emergency-app/
 └── README.md            # Documentation (this file)
 ```
 
-## 📦 Prerequisites
+## Prerequisites
 
 Before running this application, make sure you have:
 
@@ -80,7 +80,7 @@ Before running this application, make sure you have:
    - Chrome, Firefox, Edge, or Safari
    - Camera and location permissions enabled
 
-## 🚀 Installation
+## Installation
 
 ### Step 1: Clone or Download the Project
 
