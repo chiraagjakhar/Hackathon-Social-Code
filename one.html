@@ -216,6 +216,16 @@
       font-weight: bold;
       margin: 10px 0;
     }
+
+    /* Map section */
+    #mapFrame {
+      width: 100%;
+      height: 300px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -290,6 +300,9 @@
       <h2>Your Location</h2>
       <p id="locationText">Fetching location...</p>
 
+      <button id="mapButton" class="capture-btn" style="display:none;">🗺️ Show on Map</button>
+      <iframe id="mapFrame"></iframe>
+
       <button class="close-btn" onclick="closeGPSModal()">Close</button>
 
       <form id="uploadForm" method="POST" action="http://localhost:3000/upload" style="display:none;">
@@ -310,14 +323,16 @@
     const uploadForm = document.getElementById('uploadForm');
     const serviceTitle = document.getElementById('serviceTitle');
     const serviceInput = document.getElementById('serviceInput');
+    const mapButton = document.getElementById('mapButton');
+    const mapFrame = document.getElementById('mapFrame');
     let stream = null;
+    let currentLat = null, currentLng = null;
 
     function openGPSModal(service) {
       modal.classList.add('active');
       serviceTitle.textContent = service + ' - Emergency Report';
       serviceInput.value = service;
       
-      // Start webcam
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(s => {
           stream = s;
@@ -325,15 +340,16 @@
         })
         .catch(err => alert('Cannot access webcam: ' + err));
 
-      // Get GPS location
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          document.getElementById('locationText').textContent = `Latitude: ${lat}, Longitude: ${lng}`;
-          document.getElementById('latInput').value = lat;
-          document.getElementById('lngInput').value = lng;
-        }, error => {
+          currentLat = position.coords.latitude;
+          currentLng = position.coords.longitude;
+          document.getElementById('locationText').textContent = 
+            `Latitude: ${currentLat}, Longitude: ${currentLng}`;
+          document.getElementById('latInput').value = currentLat;
+          document.getElementById('lngInput').value = currentLng;
+          mapButton.style.display = 'inline-block';
+        }, () => {
           document.getElementById('locationText').textContent = 'Location not available';
         });
       } else {
@@ -348,8 +364,19 @@
         stream = null;
       }
       capturedImage.style.display = 'none';
+      mapFrame.style.display = 'none';
       document.getElementById('locationText').textContent = 'Fetching location...';
     }
+
+    mapButton.addEventListener('click', () => {
+      if (currentLat && currentLng) {
+        const embedUrl = `https://www.google.com/maps?q=${currentLat},${currentLng}&z=15&output=embed`;
+        mapFrame.src = embedUrl;
+        mapFrame.style.display = 'block';
+      } else {
+        alert('Location not available yet.');
+      }
+    });
 
     captureBtn.addEventListener('click', () => {
       const canvas = document.createElement('canvas');
@@ -361,11 +388,9 @@
       capturedImage.style.display = 'block';
       capturedInput.value = dataURL;
 
-      alert('Report submitted successfully!\nService: ' + serviceInput.value + '\nLocation: ' + document.getElementById('latInput').value + ', ' + document.getElementById('lngInput').value);
+      alert('Report submitted successfully!\nService: ' + serviceInput.value + '\nLocation: ' + currentLat + ', ' + currentLng);
       
-      // In production, uncomment this to actually submit:
       uploadForm.submit();
-      
       closeGPSModal();
     });
   </script>
